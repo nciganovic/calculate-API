@@ -26,6 +26,14 @@ class AddViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows groups to be viewed or edited.
     """
-    queryset = Add.objects.all()
+    #queryset = Add.objects.all()
     serializer_class = AddSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        """
+        This view should return a list of all the purchases
+        for the currently authenticated user.
+        """
+        this_user = self.request.user
+        return Add.objects.filter(user=this_user)
