@@ -16,4 +16,4 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class AddSerializer(serializers.ModelSerializer):
     class Meta:
         model = Add
-        fields = ['value', 'user']
+        fields = ['value']

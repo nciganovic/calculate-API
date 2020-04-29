@@ -8,3 +8,7 @@ class Add(models.Model):
     
     def __str__(self):
         return self.value
+
+    def save_model(self, request, obj, form, change):
+        obj.user = request.user
+        super().save_model(request, obj, form, change)
