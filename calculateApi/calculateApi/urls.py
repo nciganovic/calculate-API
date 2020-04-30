@@ -20,9 +20,11 @@ from main import views
 
 router = routers.DefaultRouter()
 router.register(r'add', views.AddViewSet, basename='add')
+#router.register(r'calculate', views.CalculateViewSet, basename='calculate')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
+    path('calculate/', views.calculate, name="calculate"),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
