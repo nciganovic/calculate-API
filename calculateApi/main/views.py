@@ -9,7 +9,7 @@ from rest_framework import viewsets, permissions, generics
 from rest_framework.views import APIView
 from rest_framework.decorators import permission_classes, api_view
 from main.serializer import AddSerializer, CalculateSerializer
-from main.models import Add, Calculate
+from main.models import Add, Calculate, History
 
 class AddViewSet(viewsets.ModelViewSet):
     serializer_class = AddSerializer
@@ -93,3 +93,28 @@ def calculate(request):
     else:
         latest_calculation = Calculate.objects.filter(user=request.user).order_by('-id')[0]
         return HttpResponse(latest_calculation)
+
+@api_view(['POST'])
+@permission_classes((permissions.IsAuthenticated, ))
+def reset(request):
+    try:
+        all_calculations = Calculate.objects.filter(user=request.user)
+        adds = Add.objects.get(user=request.user)
+
+        comma_sep_calculations = ""
+        for cal in all_calculations :
+            comma_sep_calculations += str(cal.number) + ", "
+        comma_sep_calculations = comma_sep_calculations[:-2]
+
+        history = History()
+        history.array = adds
+        history.calculations = comma_sep_calculations
+        history.user = request.user
+        history.save()
+
+        all_calculations.delete()
+        adds.delete()
+
+        return HttpResponse(status=201)
+    except:
+        return HttpResponse("You dont have any calculations yet.", status=405)

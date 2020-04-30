@@ -26,5 +26,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('calculate/', views.calculate, name="calculate"),
+    path('reset/', views.reset, name="reset"),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]
