@@ -1,3 +1,4 @@
+import json
 from django.http import JsonResponse
 from django.core import serializers
 from django.shortcuts import render, get_object_or_404
@@ -63,9 +64,14 @@ def calculate(request):
 
     if request.GET.get('all'):
         all_calculations = Calculate.objects.filter(user=request.user).order_by('-id')
-
-        x = serializers.serialize('json', all_calculations)
-        return HttpResponse(x, content_type='application/json')
+        calculation_array = []
+        for cal in all_calculations:
+            num_dict = {}
+            num_dict["number"] = cal.number
+            calculation_array.append(num_dict)
+        
+        calculation_array = json.dumps(calculation_array)
+        return HttpResponse(calculation_array, content_type='application/json')
     else:
         latest_calculation = Calculate.objects.filter(user=request.user).order_by('-id')[0]
         return HttpResponse(latest_calculation)
