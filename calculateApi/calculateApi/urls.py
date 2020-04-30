@@ -20,7 +20,6 @@ from main import views
 
 router = routers.DefaultRouter()
 router.register(r'add', views.AddViewSet, basename='add')
-#router.register(r'calculate', views.CalculateViewSet, basename='calculate')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

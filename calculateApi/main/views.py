@@ -42,30 +42,6 @@ class AddViewSet(viewsets.ModelViewSet):
             print(e)
             return HttpResponse("Invalid Data")
 
-class CalculateViewSet(viewsets.ModelViewSet):
-    serializer_class = CalculateSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        
-        instance = Add.objects.get(user=self.request.user)
-        all_numbers = instance.value.split(", ")
-        
-        sum = 0
-        for x in all_numbers:
-            sum += int(x)
-
-        calculate = Calculate()
-        calculate.number = sum
-        calculate.user = self.request.user
-        calculate.save()
-
-        all_calculations = Calculate.objects.filter(user=self.request.user).order_by('-id')
-
-        print(all_calculations[0])
-
-        return Calculate.objects.filter(user=self.request.user).order_by('-id')
-
 @api_view(['GET'])
 @permission_classes((permissions.IsAuthenticated, ))
 def calculate(request):
