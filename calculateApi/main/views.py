@@ -52,7 +52,7 @@ class AddViewSet(viewsets.ModelViewSet):
             
         except ValidationError as e:
             print(e)
-            return HttpResponse("Invalid Data", status=406)
+            return HttpResponse("Invalid data", status=406)
 
 @api_view(['GET'])
 @permission_classes((permissions.IsAuthenticated, ))
