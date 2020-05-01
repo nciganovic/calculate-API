@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from rest_framework import viewsets, permissions, generics
 from rest_framework.views import APIView
 from rest_framework.decorators import permission_classes, api_view
-from main.serializer import AddSerializer, CalculateSerializer
+from main.serializer import AddSerializer
 from main.models import Add, Calculate, History
 
 class AddViewSet(viewsets.ModelViewSet):

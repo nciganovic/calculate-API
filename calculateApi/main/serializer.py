@@ -7,8 +7,4 @@ class AddSerializer(serializers.ModelSerializer):
     class Meta:
         model = Add
         fields = ['value']
-
-class CalculateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Calculate
-        fields = ['number']
+        
