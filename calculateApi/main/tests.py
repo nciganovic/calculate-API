@@ -51,7 +51,7 @@ class CalculateTestCase(APITestCase):
         dict_array = json.dumps(dict_array)
         return dict_array
     
-    def test_response(self):
+    def test_content(self):
         response = self.client.get('/calculate/')
         self.assertEqual(response.content, b"8")
     
@@ -63,7 +63,7 @@ class CalculateTestCase(APITestCase):
         response = self.client.get('/calculate/?all=1')
         self.assertEqual(response.status_code, 200)
 
-    def test_all_response(self):
+    def test_all_content(self):
         response = self.client.get('/calculate/?all=1')
         user = User.objects.get(username="test")
         cal = Calculate.objects.filter(user=user).order_by("-id")
@@ -71,3 +71,29 @@ class CalculateTestCase(APITestCase):
         calculation_array = self.queryset_to_json("number", cal)
 
         self.assertEqual(response.content.decode('ascii'), calculation_array)
+
+    def test_fail_statuscode(self):
+        user = User.objects.get(username="test")
+        Add.objects.get(user=user).delete()
+        Calculate.objects.filter(user=user).delete()
+        response = self.client.get('/calculate/')
+        self.assertEqual(response.status_code, 406)
+        
+    def test_fail_content(self):
+        user = User.objects.get(username="test")
+        Add.objects.get(user=user).delete()
+        Calculate.objects.filter(user=user).delete()
+        response = self.client.get('/calculate/')
+        self.assertEqual(response.content.decode('ascii'), "Numbers not provided.")
+        
+"""
+class ResetTestCase(APITestCase):
+    def setUp(self):
+        User = get_user_model()
+        user = User.objects.create_user('test', 'test@gmail.com', 'test123')
+        self.client.login(username='test', password='test123')
+        Add.objects.create(value="3, 4, 1", user=user)
+        Calculate.objects.create(number=10, user=user)
+        Calculate.objects.create(number=9, user=user)
+
+"""
