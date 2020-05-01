@@ -17,7 +17,6 @@ def make_int_array_list(element, array_list):
     Converts [{'array': '1, 99, 13, 45', 'calculations': '78, 12'}]
     To [{'array': [1, 99, 13, 45], 'calculations': [78, 12]}]
     """
-    print(array_list)
     for x in array_list:
         x[element] = x[element].split(", ")
         int_arr = []
@@ -39,22 +38,21 @@ class AddViewSet(viewsets.ModelViewSet):
 
         try:
             validator(this_value)
-
             try: 
                 instance = Add.objects.get(user=self.request.user)
                 instance.value = instance.value + ", " + this_value
                 instance.save()
+                return HttpResponse(status=201)
             except:
                 add = Add()
                 add.value = this_value
                 add.user = self.request.user
                 add.save()
-                return HttpResponse("")
+                return HttpResponse(status=201)
             
-            return HttpResponse("")
         except ValidationError as e:
             print(e)
-            return HttpResponse("Invalid Data")
+            return HttpResponse("Invalid Data", status=406)
 
 @api_view(['GET'])
 @permission_classes((permissions.IsAuthenticated, ))
@@ -62,7 +60,7 @@ def calculate(request):
     try:
         instance = Add.objects.get(user=request.user)
     except:
-        return HttpResponse("Numbers not provided.")
+        return HttpResponse("Numbers not provided.", status=406)
     
     all_numbers = instance.value.split(", ")
     
@@ -84,10 +82,10 @@ def calculate(request):
             calculation_array.append(num_dict)
         
         calculation_array = json.dumps(calculation_array)
-        return HttpResponse(calculation_array, content_type='application/json')
+        return HttpResponse(calculation_array, content_type='application/json', status=200)
     else:
         latest_calculation = Calculate.objects.filter(user=request.user).order_by('-id')[0]
-        return HttpResponse(latest_calculation)
+        return HttpResponse(latest_calculation, status=200)
 
 @api_view(['POST'])
 @permission_classes((permissions.IsAuthenticated, ))
@@ -112,7 +110,7 @@ def reset(request):
 
         return HttpResponse(status=201)
     except:
-        return HttpResponse("You dont have any calculations yet.", status=405)
+        return HttpResponse("You dont have any calculations yet.", status=406)
 
 @api_view(['GET'])
 @permission_classes((permissions.IsAuthenticated, ))
@@ -121,13 +119,12 @@ def history(request):
         this_id = request.GET.get('id')
         single_history = History.objects.filter(user=request.user, id=this_id)
         if single_history:
-            print(single_history)
             single_history_list = list(single_history.values("id", "array", "calculations"))
             make_int_array_list("array", single_history_list)
             make_int_array_list("calculations", single_history_list)
-            return JsonResponse(single_history_list, safe=False)
+            return JsonResponse(single_history_list, safe=False, status=200)
         else:
-            return HttpResponse("This history doesnt exist")
+            return HttpResponse("This history doesnt exist", status=404)
     else:
         all_history = History.objects.filter(user=request.user).order_by("-id")
         if all_history:
@@ -136,7 +133,6 @@ def history(request):
             make_int_array_list("array", history_list)
             make_int_array_list("calculations", history_list)
                 
-            return JsonResponse(history_list, safe=False)
+            return JsonResponse(history_list, safe=False, status=200)
         else:
-            return HttpResponse("History is empty")
-
+            return HttpResponse("History is empty", status=404)
