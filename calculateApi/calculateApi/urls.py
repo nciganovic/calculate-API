@@ -26,5 +26,6 @@ urlpatterns = [
     path('', include(router.urls)),
     path('calculate/', views.calculate, name="calculate"),
     path('reset/', views.reset, name="reset"),
+    path('history/', views.history, name="history"),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

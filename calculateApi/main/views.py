@@ -100,3 +100,23 @@ def reset(request):
         return HttpResponse(status=201)
     except:
         return HttpResponse("You dont have any calculations yet.", status=405)
+
+@api_view(['GET'])
+@permission_classes((permissions.IsAuthenticated, ))
+def history(request):
+    if request.GET.get('id'):
+        this_id = request.GET.get('id')
+        single_history = History.objects.filter(user=request.user, id=this_id)
+        if single_history:
+            print(single_history)
+            single_history_list = list(single_history.values("id", "array", "calculations"))
+            return JsonResponse(single_history_list, safe=False)
+        else:
+            return HttpResponse("This history doesnt exist")
+    else:
+        all_history = History.objects.filter(user=request.user).order_by("-id")
+        if all_history:
+            history_list = list(all_history.values("id", "array", "calculations"))
+            return JsonResponse(history_list, safe=False)
+        else:
+            return HttpResponse("History is empty")
