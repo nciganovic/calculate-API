@@ -12,6 +12,19 @@ from rest_framework.decorators import permission_classes, api_view
 from main.serializer import AddSerializer
 from main.models import Add, Calculate, History
 
+def make_int_array_list(element, array_list):
+    """
+    Converts [{'array': '1, 99, 13, 45', 'calculations': '78, 12'}]
+    To [{'array': [1, 99, 13, 45], 'calculations': [78, 12]}]
+    """
+    print(array_list)
+    for x in array_list:
+        x[element] = x[element].split(", ")
+        int_arr = []
+        for y in x[element]:
+            int_arr.append(int(y))
+        x[element] = int_arr
+
 class AddViewSet(viewsets.ModelViewSet):
     serializer_class = AddSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -110,6 +123,8 @@ def history(request):
         if single_history:
             print(single_history)
             single_history_list = list(single_history.values("id", "array", "calculations"))
+            make_int_array_list("array", single_history_list)
+            make_int_array_list("calculations", single_history_list)
             return JsonResponse(single_history_list, safe=False)
         else:
             return HttpResponse("This history doesnt exist")
@@ -117,6 +132,11 @@ def history(request):
         all_history = History.objects.filter(user=request.user).order_by("-id")
         if all_history:
             history_list = list(all_history.values("id", "array", "calculations"))
+
+            make_int_array_list("array", history_list)
+            make_int_array_list("calculations", history_list)
+                
             return JsonResponse(history_list, safe=False)
         else:
             return HttpResponse("History is empty")
+
