@@ -33,6 +33,7 @@ python manage.py runserver <port-number>
 ```
 
 ## Users
+In order to login as admin go to: http://127.0.0.1:6767/admin/
 
 Admin user:
 
@@ -77,23 +78,6 @@ if parameter id is provided call returns just JSON for that id.
 
 ```
 {“id”: <id of element>, “array”: <array of numbers>, “calculations”: <array of all calculations for given array of numbers>}
-```
-
-#### GET /add
-
-Return list of all currently added numbers
-
-```
-{
-    "count": 1,
-    "next": null,
-    "previous": null,
-    "results": [
-        {
-            "value": "3"
-        }
-    ]
-}
 ```
 
 ## Running the tests
