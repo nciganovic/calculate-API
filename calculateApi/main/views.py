@@ -122,7 +122,7 @@ def history(request):
             make_int_array_list("calculations", single_history_list)
             return JsonResponse(single_history_list, safe=False, status=200)
         else:
-            return HttpResponse("This history doesnt exist", status=404)
+            return HttpResponse("This element does not exist", status=404)
     else:
         all_history = History.objects.filter(user=request.user).order_by("-id")
         if all_history:
