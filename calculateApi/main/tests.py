@@ -11,8 +11,8 @@ class AddTestCase(APITestCase):
         User = get_user_model()
         user = User.objects.create_user('test', 'test@gmail.com', 'test123')
         self.client.login(username='test', password='test123')
-        Add.objects.create(value="3, 4", user=user)
-       
+        self.client.post('/add/', {'value': '3, 4'})
+
     def test_single_post_statuscode(self):
         response = self.client.post('/add/', {'value': '1'})
         self.assertEqual(response.status_code, 201)
@@ -38,9 +38,11 @@ class CalculateTestCase(APITestCase):
         User = get_user_model()
         user = User.objects.create_user('test', 'test@gmail.com', 'test123')
         self.client.login(username='test', password='test123')
-        Add.objects.create(value="3, 4, 1", user=user)
-        Calculate.objects.create(number=10, user=user)
-        Calculate.objects.create(number=9, user=user)
+        self.client.post('/add/', {'value': '3, 4, 1'})
+        self.client.get('/calculate/')
+        self.client.post('/add/', {'value': '10'})
+        self.client.get('/calculate/')
+        self.client.post('/add/', {'value': '9'})
 
     def queryset_to_json(self, value, arr):
         dict_array = []
@@ -53,7 +55,7 @@ class CalculateTestCase(APITestCase):
     
     def test_content(self):
         response = self.client.get('/calculate/')
-        self.assertEqual(response.content, b"8")
+        self.assertEqual(response.content, b"27")
     
     def test_statuscode(self):
         response = self.client.get('/calculate/')
@@ -106,9 +108,11 @@ class ResetTestCase(APITestCase):
         User = get_user_model()
         user = User.objects.create_user('test', 'test@gmail.com', 'test123')
         self.client.login(username='test', password='test123')
-        Add.objects.create(value="3, 4, 1", user=user)
-        Calculate.objects.create(number=10, user=user)
-        Calculate.objects.create(number=9, user=user)
+        self.client.post('/add/', {'value': '3, 4, 1'})
+        self.client.get('/calculate/')
+        self.client.post('/add/', {'value': '10'})
+        self.client.get('/calculate/')
+        self.client.post('/add/', {'value': '9'})
 
     def test_statuscode(self):
         response = self.client.post('/reset/')
@@ -139,24 +143,24 @@ class HistoryTestCase(APITestCase):
         self.client.login(username='test', password='test123')
         
         #First calculation
-        response = self.client.post('/add/', {'value': '3, 5'})
-        response = self.client.get('/calculate/')
-        response = self.client.post('/add/', {'value': '8'})
-        response = self.client.get('/calculate/')
-        response = self.client.post('/add/', {'value': '2'})
-        response = self.client.get('/calculate/')
+        self.client.post('/add/', {'value': '3, 5'})
+        self.client.get('/calculate/')
+        self.client.post('/add/', {'value': '8'})
+        self.client.get('/calculate/')
+        self.client.post('/add/', {'value': '2'})
+        self.client.get('/calculate/')
         
-        response = self.client.post('/reset/')
+        self.client.post('/reset/')
 
         #Second calculation
-        response = self.client.post('/add/', {'value': '2'})
-        response = self.client.get('/calculate/')
-        response = self.client.post('/add/', {'value': '4, 6'})
-        response = self.client.get('/calculate/')
-        response = self.client.post('/add/', {'value': '8'})
-        response = self.client.get('/calculate/')
+        self.client.post('/add/', {'value': '2'})
+        self.client.get('/calculate/')
+        self.client.post('/add/', {'value': '4, 6'})
+        self.client.get('/calculate/')
+        self.client.post('/add/', {'value': '8'})
+        self.client.get('/calculate/')
 
-        response = self.client.post('/reset/')
+        self.client.post('/reset/')
         
     def test_content(self):
         response = self.client.get('/history/')
