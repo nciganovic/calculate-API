@@ -1,14 +1,11 @@
 import json
 from django.http import JsonResponse
-from django.core import serializers
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.contrib.auth.models import User, Group
 from django.http import HttpResponse
 from django.core.validators import int_list_validator
 from rest_framework import viewsets, permissions, generics
-from rest_framework.views import APIView
 from rest_framework.decorators import permission_classes, api_view
-from main.serializer import AddSerializer
 from main.models import Add, Calculate, History
 
 def make_int_array_list(element, array_list):
@@ -23,34 +20,32 @@ def make_int_array_list(element, array_list):
             int_arr.append(int(y))
         x[element] = int_arr
 
-class AddViewSet(viewsets.ModelViewSet):
-    serializer_class = AddSerializer
-    permission_classes = [permissions.IsAuthenticated]
+def index(request):
+    return HttpResponse(status=200)
 
-    def get_queryset(self):
-        this_user = self.request.user
-        return Add.objects.filter(user=this_user)
+@api_view(['POST'])
+@permission_classes((permissions.IsAuthenticated, ))
+def add(request):
+    this_value = request.POST['value']
 
-    def create(self, validated_data):
-        this_value = validated_data.POST['value']
-        validator = int_list_validator(sep=', ', message=None, code='invalid', allow_negative=True)
+    validator = int_list_validator(sep=', ', message=None, code='invalid', allow_negative=True)
 
-        try:
-            validator(this_value)
-            try: 
-                instance = Add.objects.get(user=self.request.user)
-                instance.value = instance.value + ", " + this_value
-                instance.save()
-                return HttpResponse(status=201)
-            except:
-                add = Add()
-                add.value = this_value
-                add.user = self.request.user
-                add.save()
-                return HttpResponse(status=201)
-            
+    try:
+        validator(this_value)
+        try: 
+            instance = Add.objects.get(user=request.user)
+            instance.value = instance.value + ", " + this_value
+            instance.save()
+            return HttpResponse(status=201)
         except:
-            return HttpResponse("Invalid data", status=406)
+            add = Add()
+            add.value = this_value
+            add.user = request.user
+            add.save()
+            return HttpResponse(status=201)
+        
+    except:
+        return HttpResponse("Invalid data", status=406)
 
 @api_view(['GET'])
 @permission_classes((permissions.IsAuthenticated, ))
@@ -90,6 +85,10 @@ def calculate(request):
 def reset(request):
     try:
         all_calculations = Calculate.objects.filter(user=request.user)
+        
+        if not all_calculations:
+            return HttpResponse("You dont have any calculations yet.", status=406)
+
         adds = Add.objects.get(user=request.user)
 
         comma_sep_calculations = ""

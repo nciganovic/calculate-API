@@ -18,12 +18,10 @@ from django.urls import path, include
 from rest_framework import routers
 from main import views
 
-router = routers.DefaultRouter()
-router.register(r'add', views.AddViewSet, basename='add')
-
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include(router.urls)),
+    path('',  views.index, name="index"),
+    path('add/', views.add, name="add"),
     path('calculate/', views.calculate, name="calculate"),
     path('reset/', views.reset, name="reset"),
     path('history/', views.history, name="history"),
