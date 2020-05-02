@@ -129,12 +129,19 @@ class ResetTestCase(APITestCase):
         response = self.client.post('/reset/')
         self.assertEqual(response.content.decode('ascii'), "")
 
+    def test_fail_content_no_calc(self):
+        user = User.objects.get(username="test")
+        Calculate.objects.filter(user=user).delete()
+        response = self.client.post('/reset/')
+        self.assertEqual(response.content.decode('ascii'), "You dont have any calculations yet.")
+
     def test_fail_content(self):
         user = User.objects.get(username="test")
         Add.objects.get(user=user).delete()
         Calculate.objects.filter(user=user).delete()
         response = self.client.post('/reset/')
         self.assertEqual(response.content.decode('ascii'), "You dont have any calculations yet.")
+
 
 class HistoryTestCase(APITestCase):
     def setUp(self):
