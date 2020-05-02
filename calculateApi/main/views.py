@@ -5,7 +5,6 @@ from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User, Group
 from django.http import HttpResponse
 from django.core.validators import int_list_validator
-from django.core.exceptions import ValidationError
 from rest_framework import viewsets, permissions, generics
 from rest_framework.views import APIView
 from rest_framework.decorators import permission_classes, api_view
@@ -50,8 +49,7 @@ class AddViewSet(viewsets.ModelViewSet):
                 add.save()
                 return HttpResponse(status=201)
             
-        except ValidationError as e:
-            print(e)
+        except:
             return HttpResponse("Invalid data", status=406)
 
 @api_view(['GET'])
