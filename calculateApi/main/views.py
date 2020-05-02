@@ -33,7 +33,7 @@ class AddViewSet(viewsets.ModelViewSet):
 
     def create(self, validated_data):
         this_value = validated_data.POST['value']
-        validator = int_list_validator(sep=', ', message=None, code='invalid', allow_negative=False)
+        validator = int_list_validator(sep=', ', message=None, code='invalid', allow_negative=True)
 
         try:
             validator(this_value)

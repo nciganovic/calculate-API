@@ -11,14 +11,14 @@ class AddTestCase(APITestCase):
         User = get_user_model()
         user = User.objects.create_user('test', 'test@gmail.com', 'test123')
         self.client.login(username='test', password='test123')
-        self.client.post('/add/', {'value': '3, 4'})
+        self.client.post('/add/', {'value': '-3, 4'})
 
     def test_single_post_statuscode(self):
         response = self.client.post('/add/', {'value': '1'})
         self.assertEqual(response.status_code, 201)
 
     def test_multiple_post_statuscode(self):
-        response = self.client.post('/add/', {'value': '12, 13, 15, 17'})
+        response = self.client.post('/add/', {'value': '12, -13, 15, -17'})
         self.assertEqual(response.status_code, 201)
 
     def test_fail_status(self):
@@ -42,7 +42,7 @@ class CalculateTestCase(APITestCase):
         self.client.get('/calculate/')
         self.client.post('/add/', {'value': '10'})
         self.client.get('/calculate/')
-        self.client.post('/add/', {'value': '9'})
+        self.client.post('/add/', {'value': '-9'})
 
     def queryset_to_json(self, value, arr):
         dict_array = []
@@ -55,7 +55,7 @@ class CalculateTestCase(APITestCase):
     
     def test_content(self):
         response = self.client.get('/calculate/')
-        self.assertEqual(response.content, b"27")
+        self.assertEqual(response.content, b"9")
     
     def test_statuscode(self):
         response = self.client.get('/calculate/')
@@ -112,7 +112,7 @@ class ResetTestCase(APITestCase):
         self.client.get('/calculate/')
         self.client.post('/add/', {'value': '10'})
         self.client.get('/calculate/')
-        self.client.post('/add/', {'value': '9'})
+        self.client.post('/add/', {'value': '-9'})
 
     def test_statuscode(self):
         response = self.client.post('/reset/')
@@ -155,7 +155,7 @@ class HistoryTestCase(APITestCase):
         #Second calculation
         self.client.post('/add/', {'value': '2'})
         self.client.get('/calculate/')
-        self.client.post('/add/', {'value': '4, 6'})
+        self.client.post('/add/', {'value': '4, -6'})
         self.client.get('/calculate/')
         self.client.post('/add/', {'value': '8'})
         self.client.get('/calculate/')
@@ -164,7 +164,7 @@ class HistoryTestCase(APITestCase):
         
     def test_content(self):
         response = self.client.get('/history/')
-        json_response = '[{"id": 2, "array": [2, 4, 6, 8], "calculations": [2, 12, 20]}, {"id": 1, "array": [3, 5, 8, 2], "calculations": [8, 16, 18]}]'
+        json_response = '[{"id": 2, "array": [2, 4, -6, 8], "calculations": [2, 0, 8]}, {"id": 1, "array": [3, 5, 8, 2], "calculations": [8, 16, 18]}]'
         self.assertEqual(response.content.decode('ascii'), json_response)
 
     def test_statuscode(self):
@@ -173,12 +173,12 @@ class HistoryTestCase(APITestCase):
 
     def test_content_id(self):
         response = self.client.get('/history/?id=2')
-        json_response = '[{"id": 2, "array": [2, 4, 6, 8], "calculations": [2, 12, 20]}]'
+        json_response = '[{"id": 2, "array": [2, 4, -6, 8], "calculations": [2, 0, 8]}]'
         self.assertEqual(response.content.decode('ascii'), json_response)
 
     def test_statuscode_id(self):
         response = self.client.get('/history/?id=2')
-        json_response = '[{"id": 2, "array": [2, 4, 6, 8], "calculations": [2, 12, 20]}]'
+        json_response = '[{"id": 2, "array": [2, 4, -6, 8], "calculations": [2, 0, 8]}]'
         self.assertEqual(response.status_code, 200)
 
     def test_fail_content(self):
