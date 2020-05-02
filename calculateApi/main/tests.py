@@ -86,7 +86,7 @@ class CalculateTestCase(APITestCase):
         response = self.client.get('/calculate/')
         self.assertEqual(response.content.decode('ascii'), "Numbers not provided.")
         
-"""
+
 class ResetTestCase(APITestCase):
     def setUp(self):
         User = get_user_model()
@@ -96,4 +96,25 @@ class ResetTestCase(APITestCase):
         Calculate.objects.create(number=10, user=user)
         Calculate.objects.create(number=9, user=user)
 
-"""
+    def test_statuscode(self):
+        response = self.client.post('/reset/')
+        self.assertEqual(response.status_code, 201)
+
+    def test_fail_statuscode(self):
+        user = User.objects.get(username="test")
+        Add.objects.get(user=user).delete()
+        Calculate.objects.filter(user=user).delete()
+        response = self.client.post('/reset/')
+        self.assertEqual(response.status_code, 406)
+
+    def test_content(self):
+        response = self.client.post('/reset/')
+        self.assertEqual(response.content.decode('ascii'), "")
+
+    def test_fail_content(self):
+        user = User.objects.get(username="test")
+        Add.objects.get(user=user).delete()
+        Calculate.objects.filter(user=user).delete()
+        response = self.client.post('/reset/')
+        self.assertEqual(response.content.decode('ascii'), "You dont have any calculations yet.")
+
