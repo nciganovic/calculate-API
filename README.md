@@ -99,9 +99,9 @@ File that will be run with this command is inside calculateApi/main/tests.py
 
 ## Built With
 
-* [Python](https://www.python.org/) - Programming language
-* [Django](https://www.djangoproject.com/) - The web framework used
-* [Django REST Framework](https://www.django-rest-framework.org/) - REST framework
+* [Python](https://www.python.org/) - Programming language (3.8.0)
+* [Django](https://www.djangoproject.com/) - The web framework used (3.0.5)
+* [Django REST Framework](https://www.django-rest-framework.org/) - REST framework (3.11.0) 
 
 ## Other technologies
 
