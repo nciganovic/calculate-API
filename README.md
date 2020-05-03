@@ -14,10 +14,16 @@ Python 3.8.x
 
 ### Installing
 
-Create and activate virtual environment inside project
+Create virtual environment inside project
 
 ```
 virtualenv -p python env
+```
+
+Activate virtual envirnment
+
+```
+source env/bin/activate
 ```
 
 Install all dependencies 
