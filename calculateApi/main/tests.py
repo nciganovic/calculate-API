@@ -10,8 +10,12 @@ class AddTestCase(APITestCase):
     def setUp(self):
         User = get_user_model()
         user = User.objects.create_user('test', 'test@gmail.com', 'test123')
+        user2 = User.objects.create_user('test2', 'test2@gmail.com', 'test123')
+
         self.client.login(username='test', password='test123')
         self.client.post('/add/', {'value': '-3, 4'})
+
+        Add.objects.create(value="5", user=user2)
 
     def test_single_post_statuscode(self):
         response = self.client.post('/add/', {'value': '1'})
@@ -37,12 +41,16 @@ class CalculateTestCase(APITestCase):
     def setUp(self):
         User = get_user_model()
         user = User.objects.create_user('test', 'test@gmail.com', 'test123')
+        user2 = User.objects.create_user('test2', 'test2@gmail.com', 'test123')
+
         self.client.login(username='test', password='test123')
         self.client.post('/add/', {'value': '3, 4, 1'})
         self.client.get('/calculate/')
         self.client.post('/add/', {'value': '10'})
         self.client.get('/calculate/')
         self.client.post('/add/', {'value': '-9'})
+        
+        Calculate.objects.create(number="5", user=user2)
 
     def queryset_to_json(self, value, arr):
         dict_array = []
@@ -107,6 +115,7 @@ class ResetTestCase(APITestCase):
     def setUp(self):
         User = get_user_model()
         user = User.objects.create_user('test', 'test@gmail.com', 'test123')
+        
         self.client.login(username='test', password='test123')
         self.client.post('/add/', {'value': '3, 4, 1'})
         self.client.get('/calculate/')
@@ -147,6 +156,8 @@ class HistoryTestCase(APITestCase):
     def setUp(self):
         User = get_user_model()
         user = User.objects.create_user('test', 'test@gmail.com', 'test123')
+        user2 = User.objects.create_user('test2', 'test2@gmail.com', 'test123')
+        
         self.client.login(username='test', password='test123')
         
         #First calculation
@@ -168,6 +179,8 @@ class HistoryTestCase(APITestCase):
         self.client.get('/calculate/')
 
         self.client.post('/reset/')
+
+        History.objects.create(array="1, 3, 5", calculations="4, 9", user=user2)
         
     def test_content(self):
         response = self.client.get('/history/')
