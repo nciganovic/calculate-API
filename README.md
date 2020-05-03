@@ -37,6 +37,7 @@ Running local server in directory where is manage.py file (second calculateAPI f
 ```
 python manage.py runserver <port-number>
 ```
+In order to stop server press Ctrl+C
 
 ## Users
 In order to login as admin go to: http://127.0.0.1:6767/admin/
@@ -98,6 +99,7 @@ File that will be run with this command is inside calculateApi/main/tests.py
 
 ## Built With
 
+* [Python](https://www.python.org/) - Programming language
 * [Django](https://www.djangoproject.com/) - The web framework used
 * [Django REST Framework](https://www.django-rest-framework.org/) - REST framework
 
